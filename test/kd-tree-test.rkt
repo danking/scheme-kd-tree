@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 
 #|  kd-tree-test.ss: Test suite for kd-tree.ss.
     Copyright (C) 2010 Will M. Farr <wmfarr@gmail.com>
@@ -17,12 +17,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 |#
 
-(require schemeunit
-         schemeunit/text-ui
+(require rackunit
          srfi/67
-         "../kd-tree.ss")
+         "../kd-tree.rkt")
 
-(require/expose "../kd-tree.ss" (find-nth-sorted))
+(require/expose "../kd-tree.rkt" (find-nth-sorted))
 
 (provide tests)
 
@@ -55,7 +54,7 @@
 
 (define tests
   (test-suite
-   "denest.ss tests"
+   "kd-tree.rkt tests"
    (test-case
     "find-nth-sorted test"
     (for ((i (in-range 100)))
@@ -76,5 +75,3 @@
     (let ((pts (build-list 10000 (lambda (i) (random-point-in-unit-cube 2)))))
       (let ((tree (objects->kd-tree values pts)))
         (check-true (check-tree-invariant? values tree)))))))
-             
-    

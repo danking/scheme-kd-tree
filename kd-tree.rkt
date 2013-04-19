@@ -1,6 +1,7 @@
-#lang scheme
+#lang racket
 
-#|  denest.ss: A k-D tree datastructure for partitioning a set of points in R^n.
+#|  kd-tree.rkt: A k-D tree datastructure for partitioning a set of points in
+    R^n.
     Copyright (C) 2010 Will M. Farr <wmfarr@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -120,20 +121,25 @@
 (define (objects->kd-tree ->coords objects)
   (cond
    ((null? objects) (make-empty-kd-tree))
-   ((null? (cdr objects)) (make-cell-kd-tree objects (make-empty-kd-tree) (make-empty-kd-tree)))
-   ((all-equal? objects (lambda (o1 o2) (coord-compare (->coords o1) (->coords o2))))
+   ((null? (cdr objects)) (make-cell-kd-tree objects
+                                             (make-empty-kd-tree)
+                                             (make-empty-kd-tree)))
+   ((all-equal? objects (lambda (o1 o2) (coord-compare (->coords o1)
+                                                       (->coords o2))))
     (make-cell-kd-tree objects (make-empty-kd-tree) (make-empty-kd-tree)))
    (else
     (let ((N (length objects)))
       (let-values (((low high)
                     (objects->bounds ->coords objects)))
         (let* ((dim (longest-dimension low high))
-               (compare (lambda (o1 o2) (real-compare (vector-ref (->coords o1) dim)
-                                                      (vector-ref (->coords o2) dim)))))
+               (compare (lambda (o1 o2) (real-compare
+                                         (vector-ref (->coords o1) dim)
+                                         (vector-ref (->coords o2) dim)))))
           (let ((pivot (find-nth-sorted objects (sub1 (floor (/ N 2))) compare)))
             (let-values (((lte gt)
-                          (partition (lambda (obj) (<=? compare obj pivot)) objects)))
+                          (partition (lambda (obj) (<=? compare obj pivot))
+                                     objects)))
               (make-cell-kd-tree objects
                                  (objects->kd-tree ->coords lte)
                                  (objects->kd-tree ->coords gt))))))))))
-                            
+
